@@ -1,4 +1,4 @@
-#여운 (Yeo-un) : Music Polaroid
+# 여운 (Yeo-un) : Music Polaroid
 
 **"그냥 듣고 넘기는 음악 대신, 내 감정을 적어서 한 장의 폴라로이드로 남기는 앱"**
 
