@@ -3,8 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:mini_music_visualizer/mini_music_visualizer.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // env 파일 읽기용
-import 'package:google_generative_ai/google_generative_ai.dart'; // 제미나이 AI
 import 'polaroid_editor.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -16,7 +14,7 @@ class PlayerScreen extends StatefulWidget {
     Key? key,
     required this.videoId,
     required this.title,
-    required this.imageUrl, // 👈 2. 여기도 추가하세요!
+    required this.imageUrl,
   }) : super(key: key);
 
   @override
@@ -25,7 +23,6 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen> {
   late YoutubePlayerController _controller;
-  String _recommendedGame = "아직 분석 전입니다.";
 
   @override
   void initState() {
@@ -48,52 +45,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
     super.dispose();
   }
 
-  // 🎮 똑똑해진 AI 게임 추천 로직!
-  void _analyzeMoodAndRecommendGame() async {
-    setState(() {
-      _recommendedGame = "🤔 AI가 노래 분위기를 분석 중입니다...\n잠시만 기다려주세요!";
-    });
-
-    try {
-      final apiKey = dotenv.env['GEMINI_API_KEY'];
-      if (apiKey == null || apiKey.isEmpty) {
-        setState(() { _recommendedGame = "🚨 에러: Gemini API 키를 찾을 수 없습니다."; });
-        return;
-      }
-
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash', // 가장 표준적인 이름입니다.
-        apiKey: apiKey,
-      );
-
-      final prompt = """
-        너는 전 세계의 음악과 비디오 게임을 모두 알고 있는 최고의 콘텐츠 큐레이터야.
-        지금 사용자가 듣고 있는 노래는 '${widget.title}' 이야.
-        
-        1. 이 노래의 전반적인 분위기나 장르를 1줄로 요약해줘.
-        2. 이 노래의 분위기와 가장 잘 어울리는 비디오 게임 딱 1개를 추천해줘.
-        3. 왜 이 게임을 추천했는지 1~2줄로 설명해줘.
-        
-        결과는 이모지를 섞어서 친근하고 깔끔하게 한국어로 출력해.
-      """;
-
-      final response = await model.generateContent([Content.text(prompt)]);
-
-      setState(() {
-        _recommendedGame = response.text ?? "결과를 가져오지 못했습니다.";
-      });
-
-    } catch (e) {
-      setState(() {
-        _recommendedGame = "🚨 분석 중 에러가 발생했습니다: $e";
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('음악 재생 & 분위기 분석')),
+      // 👈 상단 제목도 '음악 재생 & 폴라로이드'로 바꿨습니다!
+      appBar: AppBar(title: const Text('음악 재생 & 폴라로이드')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -130,7 +86,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   MaterialPageRoute(
                     builder: (context) => PolaroidEditor(
                       title: widget.title,
-                      imageUrl: widget.imageUrl, // 👈 바로 여기!!! 여기에 넣으라는 뜻이었습니다.
+                      imageUrl: widget.imageUrl,
                     ),
                   ),
                 );
@@ -142,19 +98,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 backgroundColor: Colors.white10,
               ),
             ),
-            const SizedBox(height: 20),
-            Card(
-              margin: const EdgeInsets.all(20),
-              color: Colors.grey[800],
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  _recommendedGame,
-                  style: const TextStyle(fontSize: 16, height: 1.5),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
+            // ✂️ 하단에 있던 AI 분석 결과 텍스트 박스(Card)를 통째로 삭제했습니다!
+            const SizedBox(height: 40),
           ],
         ),
       ),
