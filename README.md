@@ -2,7 +2,7 @@
 
 **"그냥 듣고 넘기는 음악 대신, 내 감정을 적어서 한 장의 폴라로이드로 남기는 앱"**
 
-<img src="https://github.com/ljw021014/mobile_Programming_Middle/example/assets/images/yeo_un_icon.png" width="150" height="150"/>
+<img src="example/assets/images/yeo_un_icon.png" width="150" height="150"/>
 
 
 ## 1. 프로젝트명
