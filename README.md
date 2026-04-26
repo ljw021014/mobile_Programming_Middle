@@ -37,5 +37,5 @@
 * **코드 최적화:** 프로토타입 만들 때 게임 분석 기능 같은 걸 넣으려다 뺐는데, 파일 곳곳에 남아있던 안 쓰는 찌꺼기 코드들 싹 다 날리고 가볍게 만드는 최적화 작업도 AI 도움 받아서 깔끔하게 정리함.
 
 ## 6. 클론 원본 및 라이선스
-* **Original Repo:** https://github.com/mchome/mini_music_visualizer
+* **Original Repo:** https://github.com/mpcreza/mini_music_visualizer
 * **License:** MIT License
