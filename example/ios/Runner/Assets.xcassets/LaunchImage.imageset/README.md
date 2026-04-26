@@ -1,5 +1,41 @@
-# Launch Screen Assets
+#여운 (Yeo-un) : Music Polaroid
 
-You can customize the launch screen with your own desired assets by replacing the image files in this directory.
+**"그냥 듣고 넘기는 음악 대신, 내 감정을 적어서 한 장의 폴라로이드로 남기는 앱"**
 
-You can also do it by opening your Flutter project's Xcode project with `open ios/Runner.xcworkspace`, selecting `Runner/Assets.xcassets` in the Project Navigator and dropping in the desired images.
+(assets/images/yeo_un_icon.png)
+
+
+## 1. 프로젝트명
+**여운 (Yeo-un)** - 음악을 사진처럼 간직하는 폴라로이드 앱
+
+## 2. 프로그램 개요
+저는 요즘 기술과 감성을 엮는 것에 관심이 많아졌습니다. 최근의 음악 앱들은 편하긴 한데 그냥 노래를 무한 재생하는 용도에 가깝습니다. 그래서 예전 싸이월드 BGM이나 폴라로이드 사진처럼 아날로그적인 감성을 스마트폰에 담아보고 싶었습니다.
+
+원하는 음악을 유튜브 API로 검색해서 틀고, 그 노래를 들으면서 떠오른 생각이나 꽂힌 가사를 메모해서 인스타에 공유하기 좋게 '음악 폴라로이드' 이미지로 만들어주는 앱입니다.
+
+## 3. 주요 기능
+* **음악 검색 및 재생:** YouTube Data API로 노래 검색. 백그라운드 재생이랑 노래 틀 때 나오는 애니메이션(Visualizer) 적용.
+* **폴라로이드 만들기:**
+    * 앨범 아트 가져와서 진짜 폴라로이드 사진 같은 UI로 변환.
+    * 감성적인 기본 문구 고르거나, 내가 직접 가사/메모를 적을 수 있음 (손글씨 폰트 적용).
+* **이미지 캡처 & 공유:** 화면 그대로 캡처해서 내 폰에 저장하거나 인스타그램, 카카오톡으로 바로 공유 가능.
+
+## 4. 내가 구현한 부분 (클론 코딩과 다른 점)
+처음엔 음악 애니메이션 오픈소스를 써보려고 클론했는데, 하다 보니 기획이 커져서 핵심 기능이랑 화면은 처음부터 끝까지 직접 다 새로 짰습니다.
+
+* **[가져다 쓴 부분]** `mini_music_visualizer` 패키지의 기본 애니메이션 UI (단순 클론)
+* **[직접 새로 만든 부분]**
+    * 유튜브 API 연결해서 검색하고 영상 틀어주는 전체 기능 (`youtube_service.dart`, `player_screen.dart`)
+    * 폴라로이드 꾸미고 키보드 빈 화면 눌러서 내리는 디테일한 UI/UX 구현 (`polaroid_editor.dart`)
+    * 화면 캡처하고 다른 앱으로 공유(`share_plus`)하는 기능 연동
+    * 전체적인 앱 브랜딩 (앱 이름, 아이콘 적용 등)
+
+## 5. AI 활용 여부 (바이브 코딩)
+**적극적으로 활용함 (주로 제미나이)**
+* **에러 해결:** 처음 써보는 패키지들(`Youtubeer_flutter` 등) 설정하다가 빨간 줄 폭탄 맞았을 때, AI한테 물어보면서 빌드 에러 잡음.
+* **디자인 & 기획 조율:** 'Warm Tech' 느낌을 내기 위해 폴라로이드 그림자 효과나 손글씨 폰트를 어떻게 넣을지 같이 고민함.
+* **코드 최적화:** 프로토타입 만들 때 게임 분석 기능 같은 걸 넣으려다 뺐는데, 파일 곳곳에 남아있던 안 쓰는 찌꺼기 코드들 싹 다 날리고 가볍게 만드는 최적화 작업도 AI 도움 받아서 깔끔하게 정리함.
+
+## 6. 클론 원본 및 라이선스
+* **Original Repo:** https://github.com/mchome/mini_music_visualizer
+* **License:** MIT License
