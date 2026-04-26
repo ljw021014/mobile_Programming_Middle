@@ -5,12 +5,19 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:mini_music_visualizer/mini_music_visualizer.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // env 파일 읽기용
 import 'package:google_generative_ai/google_generative_ai.dart'; // 제미나이 AI
+import 'polaroid_editor.dart';
 
 class PlayerScreen extends StatefulWidget {
   final String videoId;
   final String title;
+  final String imageUrl;
 
-  const PlayerScreen({Key? key, required this.videoId, required this.title}) : super(key: key);
+  const PlayerScreen({
+    Key? key,
+    required this.videoId,
+    required this.title,
+    required this.imageUrl, // 👈 2. 여기도 추가하세요!
+  }) : super(key: key);
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -29,7 +36,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
         autoPlay: true,
         mute: false,
       ),
-    );
+    )..addListener(() {
+      // 재생/일시정지 등 상태가 변할 때마다 화면을 다시 그리도록 합니다.
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -114,12 +124,22 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ),
             const SizedBox(height: 40),
             ElevatedButton.icon(
-              onPressed: _analyzeMoodAndRecommendGame,
-              icon: const Icon(Icons.sports_esports),
-              label: const Text("이 노래에 어울리는 게임 추천받기!"),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PolaroidEditor(
+                      title: widget.title,
+                      imageUrl: widget.imageUrl, // 👈 바로 여기!!! 여기에 넣으라는 뜻이었습니다.
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.camera_alt),
+              label: const Text("음악 폴라로이드 만들기"),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                textStyle: const TextStyle(fontSize: 16),
+                backgroundColor: Colors.white10,
               ),
             ),
             const SizedBox(height: 20),

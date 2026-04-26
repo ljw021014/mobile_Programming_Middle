@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // 환경변수(.env) 로드용
-import 'youtube_service.dart'; // 아까 만든 통신병
-import 'player_screen.dart'; // 👈 이 줄을 추가!
+import 'youtube_service.dart'; // 유튜브 통신 서비스
+import 'player_screen.dart'; // 재생 화면
 
 void main() async {
-  // ⭐️ 플러터 엔진이 실행되기 전에 .env 파일을 먼저 읽어오도록 하는 매우 중요한 코드입니다!
+  // 플러터 엔진이 실행되기 전에 .env 파일을 먼저 읽어오도록 설정
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
@@ -14,13 +14,16 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key); // 👈 이렇게 변경!
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Music Search App',
-      theme: ThemeData.dark(), // 음악 앱 느낌이 나게 어두운 테마 적용!
+      debugShowCheckedModeBanner: false, // 디버그 띠 제거
+      theme: ThemeData.dark().copyWith(
+        primaryColor: Colors.cyanAccent,
+      ),
       home: const SearchScreen(),
     );
   }
@@ -28,7 +31,7 @@ class MyApp extends StatelessWidget {
 
 // 검색 화면 클래스
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key); // 👈 이렇게 변경!
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -36,30 +39,30 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final YouTubeService _youTubeService = YouTubeService(); // 통신병 소환
+  final YouTubeService _youTubeService = YouTubeService();
 
-  List<dynamic> _searchResults = []; // 검색 결과를 담을 바구니
-  bool _isLoading = false; // 로딩 빙글빙글 도는 상태
+  List<dynamic> _searchResults = [];
+  bool _isLoading = false;
 
   // 검색 버튼을 눌렀을 때 실행될 함수
   void _performSearch() async {
     if (_searchController.text.isEmpty) return;
 
     setState(() {
-      _isLoading = true; // 로딩 시작
+      _isLoading = true;
     });
 
     try {
-      // 유튜브에 검색 요청하고 결과를 기다림
       final results = await _youTubeService.searchMusic(_searchController.text);
       setState(() {
-        _searchResults = results; // 결과를 바구니에 담음
+        _searchResults = results;
       });
     } catch (e) {
-      print("검색 에러: $e");
+      // 'print' 대신 'debugPrint'를 사용하여 운영 모드 경고 해결
+      debugPrint("검색 에러: $e");
     } finally {
       setState(() {
-        _isLoading = false; // 로딩 끝
+        _isLoading = false;
       });
     }
   }
@@ -70,7 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(title: const Text('음악 검색하기')),
       body: Column(
         children: [
-          // 1. 상단 검색창 영역
+          // 1. 상단 검색창
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -82,55 +85,59 @@ class _SearchScreenState extends State<SearchScreen> {
                       hintText: '듣고 싶은 노래를 입력하세요',
                       border: OutlineInputBorder(),
                     ),
-                    onSubmitted: (_) => _performSearch(), // 엔터키 눌러도 검색되게
+                    onSubmitted: (_) => _performSearch(),
                   ),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.search, size: 30),
-                  onPressed: _performSearch, // 돋보기 눌러도 검색
+                  icon: const Icon(Icons.search, size: 30, color: Colors.cyanAccent),
+                  onPressed: _performSearch,
                 ),
               ],
             ),
           ),
 
-          // 2. 하단 검색 결과 리스트 영역
+          // 2. 검색 결과 리스트
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator()) // 로딩 중일 땐 빙글빙글
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
               itemCount: _searchResults.length,
               itemBuilder: (context, index) {
                 final item = _searchResults[index];
                 final snippet = item['snippet'];
 
-                // JSON 데이터에서 썸네일, 제목, 채널 이름만 쏙쏙 뽑아오기
-                final thumbnailUrl = snippet['thumbnails']['default']['url'];
-                // 유튜브 제목에 섞여있는 특수문자 변환
-                final title = snippet['title'].replaceAll('&quot;', '"').replaceAll('&#39;', "'");
+                // 썸네일 고화질 주소 가져오기 (없으면 기본 화질)
+                final thumbnailUrl = snippet['thumbnails']['high']?['url'] ??
+                    snippet['thumbnails']['default']['url'];
+
+                // 특수문자 변환
+                final title = snippet['title']
+                    .replaceAll('&quot;', '"')
+                    .replaceAll('&#39;', "'");
                 final channelTitle = snippet['channelTitle'];
 
                 return ListTile(
-                  leading: Image.network(thumbnailUrl, fit: BoxFit.cover), // 썸네일 이미지
+                  leading: Image.network(thumbnailUrl, width: 60, fit: BoxFit.cover),
                   title: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis // 글자가 길면 ... 으로 자르기
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(channelTitle),
                   onTap: () {
-                    // TODO: 나중에 여기를 누르면 노래가 재생되고 분위기를 분석할 겁니다!
                     final videoId = item['id']['videoId'];
-                    final songTitle = title;
 
+                    // ✅ 해결: 'song.imageUrl' 대신 추출한 'thumbnailUrl'을 사용합니다.
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PlayerScreen(
-                              videoId: videoId,
-                              title: songTitle,
-                            ),
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlayerScreen(
+                          videoId: videoId,
+                          title: title,
+                          imageUrl: thumbnailUrl,
                         ),
+                      ),
                     );
                   },
                 );
